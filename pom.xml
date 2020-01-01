@@ -80,7 +80,7 @@
         <module>sentinel-transport</module>
         <module>sentinel-adapter</module>
         <module>sentinel-dashboard</module>
-
+        <module>sentinel-sdttttt</module>
         <module>sentinel-demo</module>
         <module>sentinel-benchmark</module>
         <module>sentinel-cluster</module>
