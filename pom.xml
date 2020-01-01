@@ -39,6 +39,14 @@
         <url>https://github.com/alibaba/Sentinel/issues</url>
     </issueManagement>
 
+    <repositories>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
     <properties>
         <!-- Compile libs -->
         <fastjson.version>1.2.62</fastjson.version>
@@ -72,7 +80,7 @@
         <module>sentinel-transport</module>
         <module>sentinel-adapter</module>
         <module>sentinel-dashboard</module>
-
+        <module>sentinel-sdttttt</module>
         <module>sentinel-demo</module>
         <module>sentinel-benchmark</module>
         <module>sentinel-cluster</module>
