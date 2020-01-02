@@ -25,8 +25,9 @@ public class HelloTest {
         List<FlowRule> rules = new ArrayList<>();
         FlowRule rule = new FlowRule();
         rule.setResource("HelloWorld");
+        // QPS is request per second
         rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-        rule.setCount(20);
+        rule.setCount(30);
 
         rules.add(rule);
         FlowRuleManager.loadRules(rules);
@@ -37,21 +38,45 @@ public class HelloTest {
      * Example of Sentinel Hello World
      */
     @Test
-    public void helloSentinel() {
+    public void helloSentinel() throws InterruptedException {
+        Entry entry = null;
+        try {
+            SphU.entry("HelloWorld");
+            System.out.println("业务代码开始");
+            Thread.sleep(25);
+        } catch (BlockException | InterruptedException e) {
+            System.out.println("业务堵塞了！");
+        } finally {
+            if (entry != null) {
+                entry.exit();
+            }
+        }
+    }
+
+    /**
+     * 1000 request per second
+     * QPS set to 30
+     * <p>
+     * That's a maximum of 30 request per second,
+     * with the remaining 970 discarded
+     */
+    @Test
+    public void qps30Test() throws InterruptedException {
         Entry entry = null;
         for (; ; ) {
-            try {
-                SphU.entry("HelloWorld");
-                System.out.println("业务代码开始");
-                Thread.sleep(5);
-            } catch (BlockException | InterruptedException e) {
-                System.out.println("业务堵塞了！");
-            } finally {
-                if (entry != null) {
-                    entry.exit();
+            Thread.sleep(1000);
+            for (int i = 0; i < 1000; i++) {
+                try {
+                    SphU.entry("HelloWorld");
+                    System.out.println("业务代码开始" + i);
+                } catch (BlockException e) {
+                    System.out.println("业务堵塞了！" + i);
+                } finally {
+                    if (entry != null) {
+                        entry.exit();
+                    }
                 }
             }
         }
-
     }
 }
