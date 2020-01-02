@@ -48,6 +48,31 @@ import com.alibaba.csp.sentinel.slots.nodeselector.NodeSelectorSlot;
  * Same resource in different context will count separately, see {@link NodeSelectorSlot}.
  * </p>
  *
+ *
+ * 此类包含当前调用的元数据：<br/>
+ *
+ * <ul>
+ * <li> {@ link EntranceNode}：当前调用的根
+ *树。</ li>
+ * <li>当前{@link Entry}：当前调用点。</ li>
+ * <li>当前{@link Node}：与
+ * {@link Entry}。</ li>
+ * <li>原点：当我们想控制不同的地方时，原点很有用
+ *调用者/消费者分开。通常，来源可能是服务使用者的应用名称
+ *或原始IP。 </ li>
+ * </ ul>
+ * <p>
+ *每个{@link SphU} #entry（）或{@link SphO} #entry（）都应位于{@link Context}中，
+ *如果我们未明确调用{@link ContextUtil} #enter（），则将使用DEFAULT上下文。
+ * </ p>
+ * <p>
+ *如果我们多次调用{@link SphU} #entry（），则会创建一个调用树。
+ *相同的上下文。
+ * </ p>
+ * <p>
+ *在不同上下文中的相同资源将单独计数，请参阅{@link NodeSelectorSlot}。
+ * </ p>
+ *
  * @author jialiang.linjl
  * @author leyou(lihao)
  * @author Eric Zhao

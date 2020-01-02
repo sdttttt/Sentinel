@@ -22,6 +22,10 @@ import com.alibaba.csp.sentinel.Constants;
  * {@link NullContext} will get when invoke {@link ContextUtil}.enter(), means
  * no rules checking will do.
  *
+ * 如果{@link Context}总数超过{@link Constants＃MAX_CONTEXT_NAME_SIZE}，则
+ * {@link NullContext}将在调用{@link ContextUtil} .enter() 时获得，表示
+ * 没有规则检查会做。
+ *
  * @author qinan.qn
  */
 public class NullContext extends Context {

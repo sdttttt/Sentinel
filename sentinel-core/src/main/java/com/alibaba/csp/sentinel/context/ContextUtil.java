@@ -15,10 +15,6 @@
  */
 package com.alibaba.csp.sentinel.context;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.alibaba.csp.sentinel.Constants;
 import com.alibaba.csp.sentinel.EntryType;
 import com.alibaba.csp.sentinel.SphO;
@@ -30,12 +26,21 @@ import com.alibaba.csp.sentinel.node.Node;
 import com.alibaba.csp.sentinel.slotchain.StringResourceWrapper;
 import com.alibaba.csp.sentinel.slots.nodeselector.NodeSelectorSlot;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Utility class to get or create {@link Context} in current thread.
+ * 在当前线程中获取或创建{@link Context}的实用程序类。
  *
  * <p>
  * Each {@link SphU}#entry() or {@link SphO}#entry() should be in a {@link Context}.
  * If we don't invoke {@link ContextUtil}#enter() explicitly, DEFAULT context will be used.
+ * </p>
+ * <p>
+ * 每个{@link SphU} #entry（）或{@link SphO} #entry（）都应位于{@link Context}中。
+ * 如果我 们未明确调用{@link ContextUtil} #enter（），则将使用DEFAULT上下文。
  * </p>
  *
  * @author jialiang.linjl
@@ -46,6 +51,7 @@ public class ContextUtil {
 
     /**
      * Store the context in ThreadLocal for easy access.
+     * 发现每个线程的上下文是通过ThreadLocal实现的.
      */
     private static ThreadLocal<Context> contextHolder = new ThreadLocal<>();
 
@@ -103,6 +109,28 @@ public class ContextUtil {
      * Same resource in different context will count separately, see {@link NodeSelectorSlot}.
      * </p>
      *
+     * <p>
+     *输入调用上下文，该上下文标记为调用链的入口。
+     *上下文用{@code ThreadLocal}包装，这意味着每个线程都有自己的{@link Context}。
+     *如果当前线程没有上下文，则将创建新上下文。
+     * </ p>
+     * <p>
+     *上下文将与{@link EntranceNode}绑定，该节点代表入口统计节点
+     *调用链。如果新的{@link EntranceNode}将被创建
+     *当前上下文没有一个。请注意，相同的上下文名称将共享
+     *全局同一{@link EntranceNode}。
+     * </ p>
+     * <p>
+     *原始节点将在{@link com.alibaba.csp.sentinel.slots.clusterbuilder.ClusterBuilderSlot}中创建。
+     *请注意，不同资源的每个不同{@code origin}都会导致创建不同的新
+     * {@link Node}，表示已创建的原始统计节点总数为：<br/>
+     * {@code 独特资源名称数量*独特来源计数}。<br/>
+     *因此，当来源过多时，应仔细考虑内存占用量。
+     * </ p>
+     * <p>
+     * 在不同上下文中的相同资源将单独计数，请参阅{@link NodeSelectorSlot}。
+     * </ p>
+     *
      * @param name   the context name
      * @param origin the origin of this invocation, usually the origin could be the Service
      *               Consumer's app name. The origin is useful when we want to control different
@@ -135,8 +163,10 @@ public class ContextUtil {
                                 setNullContext();
                                 return NULL_CONTEXT;
                             } else {
+                                // 确认不存在当前线程不存在Context
+                                // 首先创建入口节点
                                 node = new EntranceNode(new StringResourceWrapper(name, EntryType.IN), null);
-                                // Add entrance node.
+                                // Add entrance node to root.
                                 Constants.ROOT.addChild(node);
 
                                 Map<String, DefaultNode> newMap = new HashMap<>(contextNameNodeMap.size() + 1);

@@ -15,16 +15,17 @@
  */
 package com.alibaba.csp.sentinel.node;
 
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.node.metric.MetricNode;
 import com.alibaba.csp.sentinel.slots.statistic.metric.DebugSupport;
 import com.alibaba.csp.sentinel.util.function.Predicate;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Holds real-time statistics for resources.
+ * 保存资源的实时统计信息。
  *
  * @author qinan.qn
  * @author leyou
@@ -34,21 +35,25 @@ public interface Node extends OccupySupport, DebugSupport {
 
     /**
      * Get incoming request per minute ({@code pass + block}).
+     * 每分钟获取传入请求（{@code pass + block}）。
      *
      * @return total request count per minute
+     * @return 每分钟总请求数
      */
     long totalRequest();
 
     /**
-     * Get pass count per minute.
+     * 获取每分钟的通过次数。
      *
      * @return total passed request count per minute
+     * @return 每分钟通过的请求总数
      * @since 1.5.0
      */
     long totalPass();
 
     /**
      * Get {@link Entry#exit()} count per minute.
+     * 获取每分钟{@link Entry＃exit（）}的计数。
      *
      * @return total completed request count per minute
      */
@@ -56,6 +61,7 @@ public interface Node extends OccupySupport, DebugSupport {
 
     /**
      * Get blocked request count per minute (totalBlockRequest).
+     * 获取每分钟被阻止的请求计数（totalBlockRequest）。
      *
      * @return total blocked request count per minute
      */
@@ -63,6 +69,7 @@ public interface Node extends OccupySupport, DebugSupport {
 
     /**
      * Get exception count per minute.
+     * 获取每分钟的异常计数。
      *
      * @return total business exception count per minute
      */
@@ -70,6 +77,7 @@ public interface Node extends OccupySupport, DebugSupport {
 
     /**
      * Get pass request per second.
+     * 每秒获取通过请求。
      *
      * @return QPS of passed requests
      */
@@ -77,6 +85,7 @@ public interface Node extends OccupySupport, DebugSupport {
 
     /**
      * Get block request per second.
+     * 每秒获取阻止请求。
      *
      * @return QPS of blocked requests
      */

@@ -25,6 +25,8 @@ import com.alibaba.csp.sentinel.slotchain.ResourceWrapper;
 /**
  * Linked entry within current context.
  *
+ * 当前上下文中的链接条目。
+ *
  * @author jialiang.linjl
  * @author Eric Zhao
  */

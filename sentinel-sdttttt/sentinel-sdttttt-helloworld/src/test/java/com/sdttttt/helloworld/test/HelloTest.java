@@ -41,7 +41,7 @@ public class HelloTest {
     public void helloSentinel() throws InterruptedException {
         Entry entry = null;
         try {
-            SphU.entry("HelloWorld");
+            entry = SphU.entry("HelloWorld");
             System.out.println("业务代码开始");
             Thread.sleep(25);
         } catch (BlockException | InterruptedException e) {
@@ -67,7 +67,7 @@ public class HelloTest {
             Thread.sleep(1000);
             for (int i = 0; i < 1000; i++) {
                 try {
-                    SphU.entry("HelloWorld");
+                    entry = SphU.entry("HelloWorld");
                     System.out.println("业务代码开始" + i);
                 } catch (BlockException e) {
                     System.out.println("业务堵塞了！" + i);
