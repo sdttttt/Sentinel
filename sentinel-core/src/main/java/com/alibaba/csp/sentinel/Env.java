@@ -19,10 +19,16 @@ import com.alibaba.csp.sentinel.init.InitExecutor;
 
 /**
  * Sentinel Env. This class will trigger all initialization for Sentinel.
+ * 前哨环境此类将触发Sentinel的所有初始化。
  *
  * <p>
  * NOTE: to prevent deadlocks, other classes' static code block or static field should
  * NEVER refer to this class.
+ * </p>
+ *
+ * <p>
+ * 注意：为防止死锁，其他类的静态代码块或静态字段应
+ * 永远不要引用此类。
  * </p>
  *
  * @author jialiang.linjl
@@ -33,6 +39,7 @@ public class Env {
 
     static {
         // If init fails, the process will exit.
+        // 如果初始化失败，则该过程将退出。
         InitExecutor.doInit();
     }
 

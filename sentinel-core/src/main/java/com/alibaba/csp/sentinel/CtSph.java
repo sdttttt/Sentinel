@@ -15,22 +15,17 @@
  */
 package com.alibaba.csp.sentinel;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.csp.sentinel.log.RecordLog;
 import com.alibaba.csp.sentinel.context.Context;
 import com.alibaba.csp.sentinel.context.ContextUtil;
 import com.alibaba.csp.sentinel.context.NullContext;
-import com.alibaba.csp.sentinel.slotchain.MethodResourceWrapper;
-import com.alibaba.csp.sentinel.slotchain.ProcessorSlot;
-import com.alibaba.csp.sentinel.slotchain.ProcessorSlotChain;
-import com.alibaba.csp.sentinel.slotchain.ResourceWrapper;
-import com.alibaba.csp.sentinel.slotchain.SlotChainProvider;
-import com.alibaba.csp.sentinel.slotchain.StringResourceWrapper;
+import com.alibaba.csp.sentinel.log.RecordLog;
+import com.alibaba.csp.sentinel.slotchain.*;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.Rule;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@inheritDoc}
@@ -158,13 +153,21 @@ public class CtSph implements Sph {
 
     /**
      * Do all {@link Rule}s checking about the resource.
+     * 执行所有{@link Rule}检查资源。
      *
      * <p>Each distinct resource will use a {@link ProcessorSlot} to do rules checking. Same resource will use
      * same {@link ProcessorSlot} globally. </p>
      *
+     * <p>每个不同的资源都将使用{@link ProcessorSlot}进行规则检查。将使用相同的资源
+     * 全局相同{@link ProcessorSlot}。 </p>
+     *
      * <p>Note that total {@link ProcessorSlot} count must not exceed {@link Constants#MAX_SLOT_CHAIN_SIZE},
      * otherwise no rules checking will do. In this condition, all requests will pass directly, with no checking
      * or exception.</p>
+     *
+     * <p>请注意，{@ link ProcessorSlot}的总数不得超过{@link Constants＃MAX_SLOT_CHAIN_SIZE}，
+     * 否则，将不会进行任何规则检查。在这种情况下，所有请求将直接通过，而不会进行检查
+     * 或例外。</p>
      *
      * @param resourceWrapper resource name
      * @param count           tokens needed
@@ -311,6 +314,7 @@ public class CtSph implements Sph {
 
     @Override
     public Entry entry(String name, EntryType type, int count, Object... args) throws BlockException {
+        // ResourceWrapper 用于包装资源
         StringResourceWrapper resource = new StringResourceWrapper(name, type);
         return entry(resource, count, args);
     }

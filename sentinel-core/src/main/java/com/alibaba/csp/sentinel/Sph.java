@@ -15,14 +15,18 @@
  */
 package com.alibaba.csp.sentinel;
 
-import java.lang.reflect.Method;
-
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+
+import java.lang.reflect.Method;
 
 /**
  * Interface to get {@link Entry} for resource protection. If any block criteria is met,
  * a {@link BlockException} or its subclasses will be thrown. Successfully getting a entry
  * indicates permitting the invocation pass.
+ *
+ * 获取{@link Entry}进行资源保护的接口。如果满足任何阻止条件，
+ * {@link BlockException}或其子类将被抛出。成功获得报名
+ * 表示允许调用通行证。
  *
  * @author qinan.qn
  * @author jialiang.linjl
@@ -136,9 +140,11 @@ public interface Sph extends SphResourceTypeSupport {
      * @param type  the resource is an inbound or an outbound method. This is used
      *              to mark whether it can be blocked when the system is unstable
      * @param count the count that the resource requires
-     * @param args  the parameters of the method. It can also be counted by setting hot parameter rule
+     * @param args  the parameters of the method.
+     *              It can also be counted by setting hot parameter rule
      * @return entry get
      * @throws BlockException if the block criteria is met
+     *
      */
     Entry entry(String name, EntryType type, int count, Object... args) throws BlockException;
 
