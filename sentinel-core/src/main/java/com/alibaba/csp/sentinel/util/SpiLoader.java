@@ -15,16 +15,12 @@
  */
 package com.alibaba.csp.sentinel.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.alibaba.csp.sentinel.log.RecordLog;
 import com.alibaba.csp.sentinel.spi.ServiceLoaderUtil;
 import com.alibaba.csp.sentinel.spi.SpiOrder;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Eric Zhao
@@ -62,6 +58,9 @@ public final class SpiLoader {
      * Load the first-found specific SPI instance (excluding provided default SPI class).
      * If no other SPI implementation found, then create a default SPI instance.
      *
+     * 加载第一个找到的特定SPI实例（不包括提供的默认SPI类）。
+     * 如果未找到其他SPI实现，则创建一个默认的SPI实例。
+     *
      * @param clazz        class of the SPI interface
      * @param defaultClass class of the default SPI implementation (if no other implementation found)
      * @param <T>          SPI type
@@ -72,8 +71,10 @@ public final class SpiLoader {
         AssertUtil.notNull(clazz, "SPI class cannot be null");
         AssertUtil.notNull(defaultClass, "default SPI class cannot be null");
         try {
+            // 获取类名
             String key = clazz.getName();
             // Not thread-safe, as it's expected to be resolved in a thread-safe context.
+            // 不是线程安全的，因为它有望在线程安全的上下文中解决。
             ServiceLoader<T> serviceLoader = SERVICE_LOADER_MAP.get(key);
             if (serviceLoader == null) {
                 serviceLoader = ServiceLoaderUtil.getServiceLoader(clazz);

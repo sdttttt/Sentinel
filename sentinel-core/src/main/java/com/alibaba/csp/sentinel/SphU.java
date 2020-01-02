@@ -15,9 +15,6 @@
  */
 package com.alibaba.csp.sentinel;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.Rule;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRuleManager;
@@ -25,17 +22,31 @@ import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.alibaba.csp.sentinel.slots.system.SystemRule;
 import com.alibaba.csp.sentinel.slots.system.SystemRuleManager;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 /**
  * Conceptually, physical or logical resource that need protection should be
  * surrounded by an entry. The requests to this resource will be blocked if any
  * criteria is met, eg. when any {@link Rule}'s threshold is exceeded. Once blocked,
  * a {@link BlockException} will be thrown.
  *
+ * 从概念上讲，需要保护的物理或逻辑资源应为
+ * 由条目包围。如果有的话，对此资源的请求将被阻止
+ * 符合标准，例如超过任何{@link Rule}的阈值时。一旦被封锁
+ * 将抛出{@link BlockException}。
+ *
  * <p>
  * To configure the criteria, we can use <code>XXXRuleManager.loadRules()</code> to add rules, eg.
  * {@link FlowRuleManager#loadRules(List)}, {@link DegradeRuleManager#loadRules(List)},
  * {@link SystemRuleManager#loadRules(List)}.
  * </p>
+ *
+ * <p>
+ *要配置条件，我们可以使用<code> XXXRuleManager.loadRules（）</ code>添加规则，例如。
+ * {@link FlowRuleManager＃loadRules（List）}，{@ link DegradeRuleManager＃loadRules（List）}，
+ * {@link SystemRuleManager＃loadRules（List）}。
+ * </ p>
  *
  * <p>
  * Following code is an example, {@code "abc"} represent a unique name for the
@@ -80,6 +91,7 @@ public class SphU {
 
     /**
      * Checking all {@link Rule}s about the resource.
+     * 检查有关资源的所有{@link Rule}。
      *
      * @param name the unique name of the protected resource
      * @throws BlockException if the block criteria is met, eg. when any rule's threshold is exceeded.
@@ -90,6 +102,7 @@ public class SphU {
 
     /**
      * Checking all {@link Rule}s about the protected method.
+     * 检查有关受保护方法的所有{@link Rule}。
      *
      * @param method the protected method
      * @throws BlockException if the block criteria is met, eg. when any rule's threshold is exceeded.

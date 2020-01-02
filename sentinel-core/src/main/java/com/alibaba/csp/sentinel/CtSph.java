@@ -15,22 +15,17 @@
  */
 package com.alibaba.csp.sentinel;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.csp.sentinel.log.RecordLog;
 import com.alibaba.csp.sentinel.context.Context;
 import com.alibaba.csp.sentinel.context.ContextUtil;
 import com.alibaba.csp.sentinel.context.NullContext;
-import com.alibaba.csp.sentinel.slotchain.MethodResourceWrapper;
-import com.alibaba.csp.sentinel.slotchain.ProcessorSlot;
-import com.alibaba.csp.sentinel.slotchain.ProcessorSlotChain;
-import com.alibaba.csp.sentinel.slotchain.ResourceWrapper;
-import com.alibaba.csp.sentinel.slotchain.SlotChainProvider;
-import com.alibaba.csp.sentinel.slotchain.StringResourceWrapper;
+import com.alibaba.csp.sentinel.log.RecordLog;
+import com.alibaba.csp.sentinel.slotchain.*;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.Rule;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@inheritDoc}
@@ -47,6 +42,9 @@ public class CtSph implements Sph {
     /**
      * Same resource({@link ResourceWrapper#equals(Object)}) will share the same
      * {@link ProcessorSlotChain}, no matter in which {@link Context}.
+     *
+     * 相同的资源（{@link ResourceWrapper＃equals（Object）}）将共享相同的资源
+     * {@link ProcessorSlotChain}，无论在哪个{@link Context}中使用。
      */
     private static volatile Map<ResourceWrapper, ProcessorSlotChain> chainMap
         = new HashMap<ResourceWrapper, ProcessorSlotChain>();
@@ -116,10 +114,14 @@ public class CtSph implements Sph {
 
     private Entry entryWithPriority(ResourceWrapper resourceWrapper, int count, boolean prioritized, Object... args)
         throws BlockException {
+
+        // 获取当前线程的上下文
         Context context = ContextUtil.getContext();
         if (context instanceof NullContext) {
             // The {@link NullContext} indicates that the amount of context has exceeded the threshold,
             // so here init the entry only. No rule checking will be done.
+            // {@link NullContext}表示上下文数量已超过阈值，
+            //因此这里仅初始化条目。不会进行任何规则检查。
             return new CtEntry(resourceWrapper, null, context);
         }
 
@@ -129,15 +131,20 @@ public class CtSph implements Sph {
         }
 
         // Global switch is close, no rule checking will do.
+        // 全局开关是关闭的，那么不会进行规则检查
         if (!Constants.ON) {
             return new CtEntry(resourceWrapper, null, context);
         }
+
 
         ProcessorSlot<Object> chain = lookProcessChain(resourceWrapper);
 
         /*
          * Means amount of resources (slot chain) exceeds {@link Constants.MAX_SLOT_CHAIN_SIZE},
          * so no rule checking will be done.
+         *
+         * 平均资源量（插槽链）超过{@link Constants.MAX_SLOT_CHAIN_SIZE}，
+         * 因此不会进行规则检查。
          */
         if (chain == null) {
             return new CtEntry(resourceWrapper, null, context);
@@ -158,13 +165,21 @@ public class CtSph implements Sph {
 
     /**
      * Do all {@link Rule}s checking about the resource.
+     * 执行所有{@link Rule}检查资源。
      *
      * <p>Each distinct resource will use a {@link ProcessorSlot} to do rules checking. Same resource will use
      * same {@link ProcessorSlot} globally. </p>
      *
+     * <p>每个不同的资源都将使用{@link ProcessorSlot}进行规则检查。将使用相同的资源
+     * 全局相同{@link ProcessorSlot}。 </p>
+     *
      * <p>Note that total {@link ProcessorSlot} count must not exceed {@link Constants#MAX_SLOT_CHAIN_SIZE},
      * otherwise no rules checking will do. In this condition, all requests will pass directly, with no checking
      * or exception.</p>
+     *
+     * <p>请注意，{@ link ProcessorSlot}的总数不得超过{@link Constants＃MAX_SLOT_CHAIN_SIZE}，
+     * 否则，将不会进行任何规则检查。在这种情况下，所有请求将直接通过，而不会进行检查
+     * 或例外。</p>
      *
      * @param resourceWrapper resource name
      * @param count           tokens needed
@@ -188,20 +203,37 @@ public class CtSph implements Sph {
      * otherwise null will return.
      * </p>
      *
+     * 获取资源的{@link ProcessorSlotChain}。新的{@link ProcessorSlotChain}将被创建
+     * 如果资源不相关则创建。
+     *
+     * <p>相同资源（{@link ResourceWrapper＃equals（Object）}）将共享相同资源
+     * {@link ProcessorSlotChain}全局，无论在{@link Context}中如何使用。<p />
+     *
+     * <p>
+     * 请注意，{@link ProcessorSlot}的总数不得超过{@link Constants＃MAX_SLOT_CHAIN_SIZE}，
+     * 否则将返回null。
+     * </p>
+     *
      * @param resourceWrapper target resource
      * @return {@link ProcessorSlotChain} of the resource
      */
     ProcessorSlot<Object> lookProcessChain(ResourceWrapper resourceWrapper) {
+        // 获取当前资源的SlotChain
         ProcessorSlotChain chain = chainMap.get(resourceWrapper);
+        // 如果不存在当前资源的SlotChina
+        // 这里使用的是双重同步锁
         if (chain == null) {
+            // ChainMap 是一个被发布的对象，需要用同步保证线程安全
             synchronized (LOCK) {
                 chain = chainMap.get(resourceWrapper);
                 if (chain == null) {
-                    // Entry size limit.
+                    // Entry size limit check.
+                    // Slot的数量不能大于阈值
                     if (chainMap.size() >= Constants.MAX_SLOT_CHAIN_SIZE) {
                         return null;
                     }
 
+                    // 这里初始化了一个新的 SlotChin
                     chain = SlotChainProvider.newSlotChain();
                     Map<ResourceWrapper, ProcessorSlotChain> newMap = new HashMap<ResourceWrapper, ProcessorSlotChain>(
                         chainMap.size() + 1);
@@ -311,6 +343,7 @@ public class CtSph implements Sph {
 
     @Override
     public Entry entry(String name, EntryType type, int count, Object... args) throws BlockException {
+        // ResourceWrapper 用于包装资源
         StringResourceWrapper resource = new StringResourceWrapper(name, type);
         return entry(resource, count, args);
     }
